@@ -139,7 +139,7 @@ public function mlecs_show(){
             $output .= '
             <tr>
                 <td>' . sprintf("%03d", $row->mlecs_record_f_list_id) . '</td>
-                <td>' . $row->ao_date . '</td>
+                <td><a  type="button"  onclick="launch()">' . $row->ao_date . '</a></td>
                 <td></td>
             </tr>
         ';

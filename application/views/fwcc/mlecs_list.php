@@ -45,6 +45,25 @@
     <div class="container">
         <div class="card shadow">
             <div class="row">
+                <!-- Modal -->
+                <div class="modal" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                <h4 class="modal-title" id="myModalLabel">Modal title</h4>
+                            </div>
+                            <div class="modal-body">
+                                ...
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                <button type="button" class="btn btn-primary">Save changes</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="col-xs-12">
                     <table class="table table-bordered table-hover dt-responsive">
 
@@ -68,6 +87,8 @@
 
 </body>
 <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.2/jquery-ui.min.js"></script>
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
 <script src="https://cdn.datatables.net/1.10.5/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/plug-ins/f2c75b7247b/integration/bootstrap/3/dataTables.bootstrap.js"></script>
 <script src="https://cdn.datatables.net/responsive/1.0.4/js/dataTables.responsive.js"></script>
@@ -91,6 +112,28 @@
                     console.log(errorThrown);
                 }
             });
+        }
+    });
+</script>
+<script>
+    $(document).ready(function() {
+        var $modal = $('#myModal');
+        $modal.find('.modal-content')
+            .css({
+                width: 625,
+                height: 175,
+            })
+            .resizable({
+                minWidth: 625,
+                minHeight: 175,
+                handles: 'n, e, s, w, ne, sw, se, nw',
+            })
+            .draggable({
+                handle: '.modal-header'
+            });
+
+        var launch = function() {
+            $modal.modal();
         }
     });
 </script>
