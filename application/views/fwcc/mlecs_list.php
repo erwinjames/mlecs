@@ -50,21 +50,12 @@
 
                         <thead>
                             <tr>
-                                <th>Country</th>
-                                <th>Languages</th>
-                                <th>Population</th>
-                                <th>Median Age</th>
-                                <th>Area (Km²)</th>
+                                <th>Record #</th>
+                                <th>Date Record</th>
+                                <th>Action</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <tr>
-                                <td>Argentina</td>
-                                <td>Spanish (official), English, Italian, German, French</td>
-                                <td>41,803,125</td>
-                                <td>31.3</td>
-                                <td>2,780,387</td>
-                            </tr>
+                        <tbody id="mlecs_list">
                         </tbody>
                         <tfoot>
 
@@ -83,6 +74,24 @@
 <script>
     $(document).ready(function() {
         $('table').DataTable();
+
+        show_list();
+
+        function show_list() {
+            var url = '<?php echo base_url(); ?>';
+            $.ajax({
+                type: 'POST',
+                url: url + 'forms/mlecs_show_list',
+                success: function(response) {
+                    $('#mlecs_list').html(response);
+                },
+                error: function(xhr, textStatus, errorThrown) {
+                    console.log(xhr.responseText);
+                    console.log(textStatus);
+                    console.log(errorThrown);
+                }
+            });
+        }
     });
 </script>
 

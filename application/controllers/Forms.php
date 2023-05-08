@@ -130,6 +130,22 @@ public function mlecs_show(){
     echo $output;
 }
 
+    public function mlecs_show_list()
+    {
+        $data = $this->Quires->show('mlecs_record');
+
+        $output = '';
+        foreach ($data as $row) {
+            $output .= '
+            <tr>
+                <td>' . sprintf("%03d", $row->mlecs_record_f_list_id) . '</td>
+                <td>' . $row->ao_date . '</td>
+                <td></td>
+            </tr>
+        ';
+        }
+        echo $output;
+    }
 
 
 }
