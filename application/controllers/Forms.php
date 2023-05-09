@@ -114,14 +114,15 @@ public function mlecs_show(){
     foreach($data as $row){
         $output .= '
             <tr>
-                <td>EQ-' . sprintf("%03d", $row->mlecs_list_id ) .'</td>
-                <td>'.$row->mlecs_list_equip_desc.'</td>
-                <td>'.$row->mlecs_list_equip_manuf.'</td>
-                <td>'.$row->mlecs_list_mlecs_sn.'</td>
-                <td>'.$row->mlecs_list_cp.'</td>
+                <td><a id="'.$row->mlecs_list_id.'" class="delete_list" style="font-size:12px;color:red;"><i class="fa fa-times-circle-o" aria-hidden="true"></i></a>&nbsp
+                EQ-' . sprintf("%03d", $row->mlecs_list_id ) . '</td>
+                <td class="editingtd" contenteditable="true" data-field="mlecs_list_equip_desc" data-id="' .$row->mlecs_list_id .'">'.$row->mlecs_list_equip_desc. '</td>
+                <td class="editingtd" contenteditable="true" data-field="mlecs_list_equip_manuf" data-id="' . $row->mlecs_list_id . '">'.$row->mlecs_list_equip_manuf. '</td>
+                <td class="editingtd"  contenteditable="true" data-field="mlecs_list_mlecs_sn" data-id="' . $row->mlecs_list_id . '">'.$row->mlecs_list_mlecs_sn.'</td>
+                <td >'.$row->mlecs_list_cp.'</td>
                 <td>'.$row->mlecs_list_lcd.'</td>
-                <td>'.$row->mlecs_list_cd.'</td>
-                <td>'.$row->mlecs_list_cbo.'</td>
+                <td>'.$row->mlecs_list_cd. '</td>
+                <td  class="editingtd" contenteditable="true" data-field="mlecs_list_cbo" data-id="' . $row->mlecs_list_id . '">'.$row->mlecs_list_cbo.'</td>
             </tr>
             <input type="hidden" name="list_id[]" value="'.$row->mlecs_list_id.'">
         ';
@@ -158,26 +159,26 @@ public function mlecs_show_list()
 }
     
     public function mlecs_show_record_data() {
-        // $record_id = $this->input->post('record_id');
-        $record_id = 1;
+        $record_id = $this->input->post('record_id');
         $this->db->select('*');
         $this->db->from('mlecs_record');
         $this->db->join('mlecs_list', 'mlecs_record.mlecs_record_f_list_id = mlecs_list.mlecs_list_id', 'inner');
-        $this->db->where('mlecs_record.mlecs_record_id', $record_id);
+        $this->db->where('mlecs_record.table_id', $record_id);
         $query = $this->db->get();
-        $output='';
-        $output.='
-        <div class="modal-header border-bottom-0" style="text-align:center">
-                            <img width="15%" src="'.base_url("assets/images/logo.png").'" alt="" srcset="">
+        $data = $query->result();
+        $output = '';
+        $output .=
+        '<div class="modal-header bordered" style="text-align:center">
+                            <img width="15%" src="' . base_url("assets/images/logo.png") . '" alt="" srcset="">
                             <h5 style="text-align:center;" class="modal-title" id="exampleModalLabel">
                             Master List of Equipment Calibration Schedule
                             </h5>
                         </div>
                         <div class="modal-body">
-                            <table class="table table-image">
-                            <thead>
+                            <table class="table table-bordered table-image">
+                            <thead class="thead-dark">
                                 <tr>
-                                <th scope="col"> Equipment ID</th>
+                                <th scope="col">Equipment ID</th>
                                 <th scope="col">Equipment Description</th>
                                 <th scope="col">Equipment Manufacturer</th>
                                 <th scope="col">Serial Number</th>
@@ -188,33 +189,36 @@ public function mlecs_show_list()
                                 </tr>
                             </thead>
                             <tbody>';
+
         if ($query->num_rows() > 0) {
-            $record = $query->row();
-            $output.='
-            <tr>
-                <td>' . 'EQ-'. sprintf("%03d", $record->mlecs_record_f_list_id). '</td>
-                <td>' . $record->mlecs_list_equip_desc . '</td>
-                <td>' . $record->mlecs_list_equip_manuf . '</td>
-                <td>' . $record->mlecs_list_mlecs_sn . '</td>
-                <td>' . $record->mlecs_list_cp . '</td>
-                <td>' . $record->mlecs_list_lcd . '</td>
-                <td>' . $record->mlecs_list_cd . '</td>
-                <td>' . $record->mlecs_list_cbo . '</td>
-             </tr>
-            ';
+            foreach ($data as $key => $record) {
+                $output .= '
+        <tr>
+            <td>' . 'EQ-' . sprintf("%03d", $record->mlecs_record_f_list_id) . '</td>
+            <td>' . $record->mlecs_list_equip_desc . '</td>
+            <td>' . $record->mlecs_list_equip_manuf . '</td>
+            <td>' . $record->mlecs_list_mlecs_sn . '</td>
+            <td>' . $record->mlecs_list_cp . '</td>
+            <td>' . $record->mlecs_list_lcd . '</td>
+            <td>' . $record->mlecs_list_cd . '</td>
+            <td>' . $record->mlecs_list_cbo . '</td>
+        </tr>';
+            }
         } else {
             $output = '<tr><td colspan="8">Record not found</td></tr>';
         }
-        $output.='  
-        </tbody>
-        </table> 
-    </div>
-    <div class="modal-footer border-top-0 d-flex justify-content-between">
-        <a id="'.$record_id.'" class="pdfPrint btn btn-success">Print</a>
-        <a id="'.$record_id.'" class="pdfDownload btn btn-success">Download</a>
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-    </div>';
+
+        $output .= '  
+    </tbody>
+    </table> 
+</div>
+<div class="modal-footer border-top-0 d-flex justify-content-between">
+    <a id="' . $record_id . '" class="pdfPrint btn btn-success"><i class="fa fa-print" aria-hidden="true"></i></a>
+    <a id="' . $record_id . '" class="pdfDownload btn btn-success"><i class="fa fa-download" aria-hidden="true"></i></a>
+    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+</div>';
         echo $output;
+
     }
 
     public function pdf()
@@ -225,7 +229,7 @@ public function mlecs_show_list()
         $this->db->select('*');
         $this->db->from('mlecs_record');
         $this->db->join('mlecs_list', 'mlecs_record.mlecs_record_f_list_id = mlecs_list.mlecs_list_id', 'inner');
-        $this->db->join('cra_reviewer_sign', 'mlecs_record.table_id = cra_reviewer_sign.table_id', 'inner');
+        $this->db->join('mlecs_reviewer_sign', 'mlecs_record.table_id = mlecs_reviewer_sign.table_id', 'inner');
         $this->db->where('mlecs_record.table_id', $record_id);
         $query = $this->db->get();
         $data = $query->result();
@@ -405,5 +409,21 @@ public function mlecs_show_list()
             $this->pdf->stream("pdf_with_image.pdf", array("Attachment" => false));
         }
 
+    public function delete_list()
+    {
+        $list_id = $this->input->post('list_id');
+        $this->db->where('mlecs_list_id', $list_id);
+        $this->db->delete('mlecs_list');
+        echo 'success';
+    }
+
+    public function edit_td()
+    {
+        $field = $this->input->post('field');
+        $id = $this->input->post('id');
+        $value = $this->input->post('value');
+        $this->Quires->update_field($id, $field, $value);
+        echo 'success';
+    }
 
 }

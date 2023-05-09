@@ -9,6 +9,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MLECS</title>
+    <link rel="stylesheet" href="<?php echo base_url(); ?>font-awesome-4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/plug-ins/f2c75b7247b/integration/bootstrap/3/dataTables.bootstrap.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/responsive/1.0.4/css/dataTables.responsive.css">
@@ -97,7 +98,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                 <br>
                 <div class="row" style="padding:30px 30px 0px 30px">
                     <div class="col-md-2">
-                        <a class="btn btn-lg btn-primary" data-toggle="modal" data-target="#largeModal">Add List</a>
+
                     </div>
                 </div>
                 <div class="row" style="padding:30px 30px 0px 30px">
@@ -110,9 +111,9 @@ defined('BASEPATH') or exit('No direct script access allowed');
                 </div>
                 <br>
                 <table class="table table-bordered table-hover">
-                    <thead class="bg-gray-200" style="font-size:14px;text-align:center;">
+                    <thead class="bg-gray-200" style="font-size:14px;text-align:center;background-color:#cccccc4f">
                         <tr>
-                            <th> Equipment ID</th>
+                            <th> Equipment ID </th>
                             <th>Equipment Description</th>
                             <th>Equipment Manufacturer</th>
                             <th>Serial Number</th>
@@ -122,7 +123,16 @@ defined('BASEPATH') or exit('No direct script access allowed');
                             <th>Calibrating Body/Organization</th>
                         </tr>
                     </thead>
-                    <tbody id="mlecs_form_data_list">
+                    <thead>
+                        <tr>
+                            <th colspan="8" width="100%" style="text-align:center;background-color:#cccccc4f">
+                                <a width="100%" class="btn btn-success" data-toggle="modal" style="font-size:12px;text-align:center;" data-target="#largeModal">
+                                    <i class="fa fa-plus" aria-hidden="true"></i>
+                                </a>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody id="mlecs_form_data_list" style="font-size:12px;">
 
                     </tbody>
                 </table>
@@ -248,6 +258,56 @@ defined('BASEPATH') or exit('No direct script access allowed');
                     }
                 });
             }
+            $(document).on('click', '.delete_list', function() {
+                var list_id = $(this).attr('id');
+                Swal.fire({
+                    title: 'Are you sure you want to delete this record?',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Yes, delete it!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.post(url + 'forms/delete_list', {
+                            list_id: list_id
+                        }, function(response) {
+                            if (response == 'success') {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Updated',
+                                    text: 'List Deleted Successfully!',
+                                    padding: '4em',
+                                    showConfirmButton: false,
+                                    timer: 1000
+                                });
+                                mlecs_table();
+                            } else {
+                                alert('An error occurred while deleting the record.');
+                            }
+                        });
+                    }
+                })
+            });
+
+            $(document).on('blur', '.editingtd', function() {
+                var field = $(this).data('field');
+                var id = $(this).data('id');
+                var value = $(this).text();
+                $.ajax({
+                    url: url + 'forms/edit_td',
+                    method: 'POST',
+                    data: {
+                        field: field,
+                        id: id,
+                        value: value
+                    },
+                    success: function(response) {
+                        console.log(response);
+                    },
+                    error: function(xhr, textStatus, errorThrown) {}
+                });
+            });
 
             $("#mlecs_add_list_form").submit(function(event) {
                 event.preventDefault(); // prevent form submission

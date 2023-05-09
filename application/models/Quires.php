@@ -45,12 +45,20 @@ error_reporting(E_ALL);
 			$cra_records_succ = $this->db->insert('mlecs_record', $insertedRecord);
 		}
 
-		$this->db->insert('cra_reviewer_sign',$reviewer);
+		$this->db->insert('mlecs_reviewer_sign',$reviewer);
 		$record_id = $records['mlecs_record_f_list_id'];
 		$this->db->where_in('mlecs_list_id', $record_id);
 		$this->db->set('flag_status', 1);
 		$this->db->update('mlecs_list');
 
+	}
+
+	public function update_field($id, $field, $value)
+	{
+		$this->db->where('mlecs_list_id', $id);
+		$this->db->set($field, $value);
+		$this->db->update('mlecs_list');
+		return ($this->db->affected_rows() > 0);
 	}
 
 	}

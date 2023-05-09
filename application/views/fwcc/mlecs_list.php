@@ -11,14 +11,15 @@
     <link rel="stylesheet" href="https://cdn.datatables.net/plug-ins/f2c75b7247b/integration/bootstrap/3/dataTables.bootstrap.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/responsive/1.0.4/css/dataTables.responsive.css">
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
-<script src="//cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.2/jquery-ui.min.js"></script>
-<script>
-      $('#table_record').DataTable();
-</script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.2/jquery-ui.min.js"></script>
+    <script>
+        $('#table_record').DataTable();
+    </script>
 </head>
 <style>
- 
-
+    table td {
+        border: 1px solid black;
+    }
     h2 {
         text-align: center;
         padding: 20px 0;
@@ -28,18 +29,22 @@
         padding: .5em 0;
     }
 
-.table-image thead td, .table-image thead th {
-  border: 0;
-  color: #666;
-  font-size: 1.2rem;
-}
-.table-image td, .table-image th {
-  vertical-align: middle;
-  text-align: center;
-}
-.modal-footer {
-  padding-top: 1rem;
-}
+    .table-image thead td,
+    .table-image thead th {
+        border: 0;
+        color: #666;
+        font-size: 1.2rem;
+    }
+
+    .table-image td,
+    .table-image th {
+        vertical-align: middle;
+        text-align: center;
+    }
+
+    .modal-footer {
+        padding-top: 1rem;
+    }
 </style>
 
 <body>
@@ -52,14 +57,14 @@
         <div class="card shadow">
             <div class="row">
                 <!-- Modal -->
-                    <div class="modal fade" id="cartModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                    <div   class="modal-dialog modal-lg modal-dialog-centered" role="document">
+                <div class="modal fade" id="cartModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
                         <div id="mlecs_record" class="modal-content" style="padding:5rem;">
-                        
-                          
+
+
                         </div>
                     </div>
-                    </div>
+                </div>
 
                 <div class="col-xs-12">
                     <table id="table_record" class="table table-bordered table-hover dt-responsive">
@@ -90,7 +95,6 @@
 <script src="https://cdn.datatables.net/plug-ins/f2c75b7247b/integration/bootstrap/3/dataTables.bootstrap.js"></script>
 <script src="https://cdn.datatables.net/responsive/1.0.4/js/dataTables.responsive.js"></script>
 <script>
-
     $(document).ready(function() {
         $('#table_record').DataTable();
 
@@ -112,97 +116,98 @@
             });
         }
         $(document).on('click', '.select-record', function() {
-        var url = '<?php echo base_url(); ?>';
-        var record_id = $(this).attr('id');
-        console.log(record_id);
-        $.ajax({
-            type: 'POST',
-            url: url + 'forms/mlecs_show_record_data',
-            data: { record_id: record_id },
-            success: function(response) {
-                console.log(response);
-                $('#mlecs_record').html(response);
-            },
-            error: function(xhr, status, error) {
-                console.log(xhr.responseText);
-            }
+            var url = '<?php echo base_url(); ?>';
+            var record_id = $(this).attr('id');
+            console.log(record_id);
+            $.ajax({
+                type: 'POST',
+                url: url + 'forms/mlecs_show_record_data',
+                data: {
+                    record_id: record_id
+                },
+                success: function(response) {
+                    console.log(response);
+                    $('#mlecs_record').html(response);
+                },
+                error: function(xhr, status, error) {
+                    console.log(xhr.responseText);
+                }
+            });
+        });
+        $(document).on('click', '.pdfDownload', function(event) {
+            event.preventDefault();
+            var url = '<?php echo base_url(); ?>';
+            var p_id = $(this).attr('id');
+            // Make an AJAX request to the PDF generation endpoint
+            $.ajax({
+                url: url + 'forms/pdf',
+                method: 'POST',
+                data: {
+                    id: p_id
+                },
+                xhrFields: {
+                    responseType: 'blob' // Set the response type to blob
+                },
+                success: function(response) {
+                    // Create a new blob object
+                    var blob = new Blob([response], {
+                        type: 'application/pdf'
+                    });
+
+                    // Create a URL for the blob object
+                    var url = URL.createObjectURL(blob);
+
+                    // Use the URL to download the file
+                    var a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'example.pdf';
+                    document.body.appendChild(a);
+                    a.click();
+                },
+                error: function(error) {
+                    console.log(JSON.stringify(error));
+                }
+            });
+        });
+        $(document).on('click', '.pdfPrint', function(event) {
+            event.preventDefault();
+            var url = '<?php echo base_url(); ?>';
+            var p_id = $(this).attr('id');
+
+            // Make an AJAX request to the PDF generation endpoint
+            $.ajax({
+                url: url + 'forms/pdf',
+                method: 'POST',
+                data: {
+                    id: p_id
+                },
+                xhrFields: {
+                    responseType: 'blob' // Set the response type to blob
+                },
+                success: function(response) {
+                    console.log(response);
+                    // Create a new blob object
+                    var blob = new Blob([response], {
+                        type: 'application/pdf'
+                    });
+
+                    // Create a URL for the blob object
+                    var url = URL.createObjectURL(blob);
+
+                    // Open the PDF in a new window
+                    var newWindow = window.open(url, '_blank');
+
+                    // Wait for the PDF to load and trigger the print dialog
+                    newWindow.addEventListener('load', function() {
+                        newWindow.print();
+                    });
+                },
+                error: function(error) {
+                    console.log(JSON.stringify(error));
+                }
+            });
         });
     });
-    $(document).on('click', '.pdfDownload', function(event) {
-                        event.preventDefault();
-                        var url = '<?php echo base_url(); ?>';
-                        var p_id = $(this).attr('id');
-                        // Make an AJAX request to the PDF generation endpoint
-                        $.ajax({
-                            url: url + 'forms/pdf',
-                            method: 'POST',
-                            data: {
-                                id: p_id
-                            },
-                            xhrFields: {
-                                responseType: 'blob' // Set the response type to blob
-                            },
-                            success: function(response) {
-                                // Create a new blob object
-                                var blob = new Blob([response], {
-                                    type: 'application/pdf'
-                                });
-
-                                // Create a URL for the blob object
-                                var url = URL.createObjectURL(blob);
-
-                                // Use the URL to download the file
-                                var a = document.createElement('a');
-                                a.href = url;
-                                a.download = 'example.pdf';
-                                document.body.appendChild(a);
-                                a.click();
-                            },
-                            error: function(error) {
-                                console.log(JSON.stringify(error));
-                            }
-                        });
-                    });
-                    $(document).on('click', '.pdfPrint', function(event) {
-                        event.preventDefault();
-                        var url = '<?php echo base_url(); ?>';
-                        var p_id = $(this).attr('id');
-
-                        // Make an AJAX request to the PDF generation endpoint
-                        $.ajax({
-                            url: url + 'forms/pdf',
-                            method: 'POST',
-                            data: {
-                                id: p_id
-                            },
-                            xhrFields: {
-                                responseType: 'blob' // Set the response type to blob
-                            },
-                            success: function(response) {
-                                console.log(response);
-                                // Create a new blob object
-                                var blob = new Blob([response], {
-                                    type: 'application/pdf'
-                                });
-
-                                // Create a URL for the blob object
-                                var url = URL.createObjectURL(blob);
-
-                                // Open the PDF in a new window
-                                var newWindow = window.open(url, '_blank');
-
-                                // Wait for the PDF to load and trigger the print dialog
-                                newWindow.addEventListener('load', function() {
-                                    newWindow.print();
-                                });
-                            },
-                            error: function(error) {
-                                console.log(JSON.stringify(error));
-                            }
-                        });
-                    });
-    });
-
 </script>
 <script>
     $(document).ready(function() {
